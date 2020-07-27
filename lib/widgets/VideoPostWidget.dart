@@ -6,14 +6,14 @@ import 'package:video_player/video_player.dart';
 
 class VideoPostWidget extends StatefulWidget
 {
-  Documents documents;
+  Documents _documents;
 
-  VideoPostWidget(this.documents);
+  VideoPostWidget(this._documents);
 
   @override
   State<StatefulWidget> createState() {
 
-    throw VideoPostWidgetState(documents);
+    return  VideoPostWidgetState(_documents);
   }
 
 
@@ -22,9 +22,9 @@ class VideoPostWidget extends StatefulWidget
 }
 
 class VideoPostWidgetState extends State<VideoPostWidget>{
-  Documents documents;
-  VideoPostWidgetState(this.documents);
-  VideoPlayerController controller;
+  Documents _documents;
+  VideoPostWidgetState(this._documents);
+  VideoPlayerController _controller;
 
 
 
@@ -32,26 +32,73 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return Card(child: Column(children: <Widget>[
-      VideoPlayer(controller)
-    ],));
+    return  AspectRatio(
+        aspectRatio: _controller.value.aspectRatio,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: <Widget>[
+            VideoPlayer(_controller),
+            _PlayPauseOverlay(controller: _controller),
+          ],
+        ));
+
   }
 
   @override
   void initState() {
-    controller = VideoPlayerController.network(documents.src);
+
     super.initState();
+    _controller = VideoPlayerController.network(_documents.src);
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.initialize().then((_) => setState(() {}));
   }
 
-  @override
-  bool get mounted {
-   controller.play();
-  }
+
 
   @override
   void dispose() {
     super.dispose();
-    controller.pause();
-    controller.dispose();
+    _controller.pause();
+    _controller.dispose();
+  }
+}
+
+
+class _PlayPauseOverlay extends StatelessWidget {
+  const _PlayPauseOverlay({Key key, this.controller}) : super(key: key);
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: Duration(milliseconds: 50),
+          reverseDuration: Duration(milliseconds: 200),
+          child: controller.value.isPlaying
+              ? SizedBox.shrink()
+              : Container(
+            color: Colors.black26,
+            child: Center(
+              child: Icon(
+                Icons.play_arrow,
+                color: Colors.white,
+                size: 60.0,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            controller.value.isPlaying ? controller.pause() : controller.play();
+          },
+        ),
+      ],
+    );
   }
 }

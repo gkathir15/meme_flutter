@@ -1,3 +1,25 @@
+//{
+//"$id": "5f1db6468145d",
+//"$collection": "5f1db344c2279",
+//"$permissions": {
+//"read": [
+//"*"
+//],
+//"write": [
+//"*"
+//]
+//},
+//"type": "youtube",
+//"url": "https://www.youtube.com/watch?v=i4_EZ8enqHs",
+//"category": "funny",
+//"caption": "eX",
+//"owner": "fhew44",
+//"upvote": 0,
+//"isMature": false,
+//"timestamp": 372093742
+//}
+
+
 class PostsCollectionResponse {
   String _id;
   int _collection;
@@ -183,9 +205,9 @@ class Documents {
         : null;
     _type = json['type'];
     _owner = json['owner'];
-    _categroy = json['categroy'];
+    _categroy = json['category'];
     _timestamp = json['timestamp'];
-    _src = json['src'];
+    _src = json['url'];
     _upvote = json['upvote'];
     _isMature = json['isMature'];
     _caption = json['caption'];
@@ -200,9 +222,9 @@ class Documents {
     }
     data['type'] = this._type;
     data['owner'] = this._owner;
-    data['categroy'] = this._categroy;
+    data['category'] = this._categroy;
     data['timestamp'] = this._timestamp;
-    data['src'] = this._src;
+    data['url'] = this._src;
     data['upvote'] = this._upvote;
     data['isMature'] = this._isMature;
     data['caption'] = this._caption;

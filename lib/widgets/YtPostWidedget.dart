@@ -33,9 +33,8 @@ class YtPostWidgetState extends State<YtPostWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return Card(child: Column(children: <Widget>[
-      YoutubePlayer(controller: controller)
-    ],));
+    return
+      YoutubePlayer(controller: controller);
   }
 
   @override
@@ -45,10 +44,7 @@ class YtPostWidgetState extends State<YtPostWidget>{
     super.initState();
   }
 
-  @override
-  bool get mounted {
-    controller.play();
-  }
+
 
   @override
   void dispose() {

@@ -8,17 +8,18 @@ import 'package:meme/model/PostsCollectionResponse.dart';
 import 'package:meme/viewModel/AppwriteClientProvider.dart';
 import 'package:meme/viewModel/PostRespViewModel.dart';
 import 'package:meme/widgets/ImagePostWidget.dart';
+import 'package:meme/widgets/PostsCard.dart';
 import 'package:meme/widgets/VideoPostWidget.dart';
 import 'package:meme/widgets/YtPostWidedget.dart';
 import 'package:provider/provider.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider<PostRespViewProvider>(
+   create:(context) =>PostRespViewProvider(),
+      child: MyApp()));
+
 }
-//  runApp(ChangeNotifierProvider<PostRespViewProvider>(
-//   create:(context) =>PostRespViewProvider(),
-//      child: MyApp()));
 
 
 class MyApp extends StatelessWidget {
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      darkTheme: ThemeData.dark(),
       home:  MyHomePage()
     );
   }
@@ -40,7 +42,8 @@ class MyHomePage extends StatefulWidget {
 
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState(){
+    return _MyHomePageState();}
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -49,11 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(floatingActionButton: FloatingActionButton(onPressed: () {
-      getPostsReq();
-    }, child: Icon(Icons.refresh),),
+      Provider.of<PostRespViewProvider>(context,listen: false).getFile();
+    }, child: Icon(Icons.add),),
         backgroundColor: Colors.white,
         body: Container(child: FutureBuilder(
-            future: postsData,
+            future: Provider.of<PostRespViewProvider>(context,listen: false ).postsData,
             builder: (BuildContext buildContext,
                 AsyncSnapshot<List<Documents>> snapshot) {
               if (snapshot.hasData) {
@@ -61,11 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount:snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
                       if (snapshot.data[index].type == "youtube") {
-                        return YtPostWidget(snapshot.data[index]);
+                        return PostsCard( snapshot.data[index],YtPostWidget(snapshot.data[index]));
                       } else if (snapshot.data[index].type == "image") {
-                        return ImagePostWidget(snapshot.data[index]);
+                        return PostsCard( snapshot.data[index],ImagePostWidget(snapshot.data[index]));
                       } else if (snapshot.data[index].type == "video") {
-                        return VideoPostWidget(snapshot.data[index]);
+                        return PostsCard( snapshot.data[index],VideoPostWidget(snapshot.data[index]));
                       } else {
                         return Container();
                       }
@@ -82,48 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _pData = List();
-  }
-
-  Future<List<Documents>> postsData;
-  List<Documents> _pData;
-
-
-  getPostsReq() async
-  {
-    var _client = new Client();
-    _client.setEndpoint('https://67ab34d5efcb.ngrok.io/v1') // Your API Endpoint
-        .setProject('5eef31384aa89') //Loaded Weights App id
-        .setSelfSigned();
-    print("getPostsReq");
-    var db = new Database(_client);
-    print("parsing1");
-    try {
-      Response<dynamic> result= await db.listDocuments(collectionId: "5ef855cdb3617");
-      print(result.statusCode);
-
-      String data = result.toString();
-
-
-      setState(() {
-        postsData= parseData(data);
-      });
-      print(result.data.toString());
-
-
-
-  }catch(e)
-  {
-  print(e.toString());
-  }
-
-
 
   }
 
-  Future<List<Documents>> parseData(String respData) async {
-    var data = PostsCollectionResponse.fromJson(jsonDecode(respData));
-    _pData.addAll(data.documents);
-    return _pData;
+  @override
+  void didChangeDependencies() {
+    print("didChangeDep");
+    Provider.of<PostRespViewProvider>(context).getPostsReq();
   }
 }

@@ -15,27 +15,50 @@ class PostRespViewProvider with ChangeNotifier
 
 
 
-   getPostsReq() async
-   {
-     print("getPostsReq");
-     var db = new Database(AppWriteClientProvider().getClient());
-     print("parsing1");
-     Future resp = db.listDocuments(collectionId: "5ef855cdb3617");
-     resp.then((value) =>() {
-         postsData= compute(parseData,value.toString());
-         print(value.toString());
-   notifyListeners();
-     }).catchError((onError){
-       print(onError);
-     });
-   }
-
-
-
-
- List<Documents> parseData(String respData)
+  getPostsReq() async
   {
+
+    print("getPostsReq");
+    var db = new Database(AppWriteClientProvider().client);
+    print("parsing1");
+    try {
+      Response<dynamic> result= await db.listDocuments(collectionId: "5f1db344c2279");
+      print(result.statusCode);
+
+      String data = result.toString();
+
+
+
+        postsData= _parseData(data);
+        notifyListeners();
+
+      print(result.data.toString());
+
+
+
+    }catch(e)
+    {
+      print(e.toString());
+    }
+
+
+
+  }
+
+
+  getFile() async {
+    Response<dynamic> response = await Storage(AppWriteClientProvider().client).getFile(fileId: "5f1da47bd97c7");
+
+    print(response.statusCode);
+    print(response.data.toString().length);
+  }
+
+  Future<List<Documents>> _parseData(String respData) async {
     var data = PostsCollectionResponse.fromJson(jsonDecode(respData));
+    if(_pData==null)
+      {
+        _pData = List();
+      }
     _pData.addAll(data.documents);
     return _pData;
   }
