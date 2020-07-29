@@ -5,26 +5,12 @@ import 'package:meme/model/PostsCollectionResponse.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class YtPostWidget extends StatefulWidget
+class YtPostWidget extends StatelessWidget
 {
   Documents documents;
 
-  YtPostWidget(this.documents);
+  YtPostWidget(this.documents,this.controller);
 
-  @override
-  State<StatefulWidget> createState() {
-
-    return YtPostWidgetState(documents);
-  }
-
-
-
-
-}
-
-class YtPostWidgetState extends State<YtPostWidget>{
-  Documents documents;
-  YtPostWidgetState(this.documents);
   YoutubePlayerController controller;
 
 
@@ -33,23 +19,14 @@ class YtPostWidgetState extends State<YtPostWidget>{
   @override
   Widget build(BuildContext context) {
 
+    controller.load(documents.src);
+
     return
       YoutubePlayer(controller: controller);
   }
 
-  @override
-  void initState() {
-    controller = YoutubePlayerController(initialVideoId: YoutubePlayer.convertUrlToId(documents.src),
-    flags: YoutubePlayerFlags(controlsVisibleAtStart: true,autoPlay: false,disableDragSeek: true));
-    super.initState();
-  }
 
 
 
-  @override
-  void dispose() {
-    super.dispose();
-    controller.pause();
-    controller.dispose();
-  }
 }
+

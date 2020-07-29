@@ -12,6 +12,8 @@ import 'package:meme/widgets/PostsCard.dart';
 import 'package:meme/widgets/VideoPostWidget.dart';
 import 'package:meme/widgets/YtPostWidedget.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 void main() {
@@ -48,6 +50,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  bool isReqSent = false;
+  YoutubePlayerController _youtubePlayerController;
+  VideoPlayerController _videoPlayerController;
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount:snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
                       if (snapshot.data[index].type == "youtube") {
-                        return PostsCard( snapshot.data[index],YtPostWidget(snapshot.data[index]));
+                        return PostsCard( snapshot.data[index],YtPostWidget(snapshot.data[index],_youtubePlayerController));
                       } else if (snapshot.data[index].type == "image") {
                         return PostsCard( snapshot.data[index],ImagePostWidget(snapshot.data[index]));
                       } else if (snapshot.data[index].type == "video") {
-                        return PostsCard( snapshot.data[index],VideoPostWidget(snapshot.data[index]));
+                        return PostsCard( snapshot.data[index],VideoPostWidget(snapshot.data[index],_videoPlayerController));
                       } else {
                         return Container();
                       }
@@ -85,12 +91,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    var id = " ";
+    _youtubePlayerController = YoutubePlayerController( initialVideoId: null,flags:YoutubePlayerFlags(controlsVisibleAtStart: true,autoPlay: false,disableDragSeek: true));
+    _videoPlayerController = VideoPlayerController.network("dataSource");
+
+
 
   }
 
   @override
   void didChangeDependencies() {
     print("didChangeDep");
-    Provider.of<PostRespViewProvider>(context).getPostsReq();
+    if(!isReqSent) {
+      isReqSent = true;
+      Provider.of<PostRespViewProvider>(context).getPostsReq();
+    }
   }
 }

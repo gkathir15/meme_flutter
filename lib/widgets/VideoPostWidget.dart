@@ -4,26 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:meme/model/PostsCollectionResponse.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPostWidget extends StatefulWidget
+class VideoPostWidget extends StatelessWidget
 {
   Documents _documents;
 
-  VideoPostWidget(this._documents);
+  VideoPostWidget(this._documents,this._controller);
 
-  @override
-  State<StatefulWidget> createState() {
-
-    return  VideoPostWidgetState(_documents);
-  }
-
-
-
-
-}
-
-class VideoPostWidgetState extends State<VideoPostWidget>{
-  Documents _documents;
-  VideoPostWidgetState(this._documents);
   VideoPlayerController _controller;
 
 
@@ -31,6 +17,8 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
 
   @override
   Widget build(BuildContext context) {
+
+    _controller = VideoPlayerController.network(_documents.src);
 
     return  AspectRatio(
         aspectRatio: _controller.value.aspectRatio,
@@ -44,28 +32,15 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
 
   }
 
-  @override
-  void initState() {
-
-    super.initState();
-    _controller = VideoPlayerController.network(_documents.src);
-
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-  }
 
 
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.pause();
-    _controller.dispose();
-  }
+
+
+
 }
+
+
 
 
 class _PlayPauseOverlay extends StatelessWidget {
