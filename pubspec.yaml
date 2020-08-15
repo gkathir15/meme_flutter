@@ -39,6 +39,9 @@ dependencies:
   timeago: ^2.0.26
   image_picker: ^0.6.7+2
   animations: ^1.1.1
+  flutter_signin_button: ^1.0.0
+  line_awesome_icons: ^1.0.4+2
+  flutter_cache_manager: ^1.4.1
 
 
 

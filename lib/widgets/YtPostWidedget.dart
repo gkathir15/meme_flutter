@@ -34,7 +34,7 @@ class YtPostWidgetState extends State<YtPostWidget>{
   Widget build(BuildContext context) {
 
     return
-      YoutubePlayer(controller: controller);
+      YoutubePlayer(key:UniqueKey(),controller: controller);
   }
 
   @override

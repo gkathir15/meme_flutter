@@ -1,7 +1,9 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meme/model/PostsCollectionResponse.dart';
+import 'package:meme/providers/AppwriteClientProvider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPostWidget extends StatefulWidget
@@ -32,7 +34,7 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return  AspectRatio(
+    return  AspectRatio(key: UniqueKey(),
         aspectRatio: _controller.value.aspectRatio,
         child: Stack(
           alignment: Alignment.bottomCenter,
@@ -48,13 +50,13 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
   void initState() {
 
     super.initState();
-    _controller = VideoPlayerController.network(_documents.src);
+    _controller = VideoPlayerController.network(new Storage(AppWriteClientProvider().client).getFileView(fileId:_documents.src));
 
     _controller.addListener(() {
-      setState(() {});
+
     });
     _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
+    _controller.initialize();
   }
 
 
