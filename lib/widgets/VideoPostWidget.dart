@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meme/model/PostsCollectionResponse.dart';
 import 'package:meme/providers/AppwriteClientProvider.dart';
+import 'package:meme/providers/VideoPlayerProvider.dart';
+import 'package:meme/widgets/VideoCacheProvider.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPostWidget extends StatefulWidget
@@ -34,15 +39,33 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return  AspectRatio(key: UniqueKey(),
-        aspectRatio: _controller.value.aspectRatio,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: <Widget>[
-            VideoPlayer(_controller),
-            _PlayPauseOverlay(controller: _controller),
-          ],
-        ));
+    return
+     FutureBuilder(
+        future:  Provider.of<VideoCacheProvider>(context).getFile(),
+        builder:(BuildContext context,
+            AsyncSnapshot<File> snapshot) {
+          if(snapshot.hasData)
+            {
+              _controller = VideoPlayerController.file(snapshot.data);
+              _controller.setLooping(true);
+              _controller.initialize();
+              _controller.play();
+              print("file ${snapshot.data.path}");
+              return AspectRatio(key: UniqueKey(),
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: <Widget>[
+                      VideoPlayer(_controller),
+                      _PlayPauseOverlay(controller: _controller),
+                    ],
+                  ));
+            }else{
+            return SizedBox(child: Center(child: CircularProgressIndicator(),),height: 400,width: MediaQuery.of(context).size.width);
+          }
+        },
+
+    );
 
   }
 
@@ -50,13 +73,14 @@ class VideoPostWidgetState extends State<VideoPostWidget>{
   void initState() {
 
     super.initState();
-    _controller = VideoPlayerController.network(new Storage(AppWriteClientProvider().client).getFileView(fileId:_documents.src));
 
-    _controller.addListener(() {
+  }
 
-    });
-    _controller.setLooping(true);
-    _controller.initialize();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<VideoCacheProvider>(context).getCachedVideo(new Storage(AppWriteClientProvider().client).getFileView(fileId:_documents.src));
+
   }
 
 
@@ -77,30 +101,43 @@ class _PlayPauseOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: Duration(milliseconds: 50),
-          reverseDuration: Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? SizedBox.shrink()
-              : Container(
-            color: Colors.black26,
-            child: Center(
-              child: Icon(
-                Icons.play_arrow,
-                color: Colors.white,
-                size: 60.0,
+    return ChangeNotifierProvider(
+      create: (_) => VideoPlayerProvider(),
+    child: Consumer<VideoPlayerProvider>(
+    builder: (_, model, __) { return Stack(
+        children: <Widget>[
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 50),
+            reverseDuration: Duration(milliseconds: 200),
+            child: controller.value.isPlaying
+                ? SizedBox.shrink()
+                : Container(
+              color: Colors.black26,
+              child: Center(
+                child: Icon(
+                  Icons.play_arrow,
+                  color: Colors.white,
+                  size: 60.0,
+                ),
               ),
             ),
           ),
-        ),
-        GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
-      ],
-    );
+          GestureDetector(
+            onTap: () {
+              controller.value.isPlaying ? controller.pause() : controller.play();
+            },
+          ),
+        ],
+      );}
+    ));
   }
+}
+
+class _MuteUnmute extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+
+    return InkWell(child: Icon(Provider.of<VideoPlayerProvider>(context).isMute?Icons.volume_off:Icons.volume_up),onTap:(){ Provider.of<VideoPlayerProvider>(context).muteUnMute();});
+  }
+
 }

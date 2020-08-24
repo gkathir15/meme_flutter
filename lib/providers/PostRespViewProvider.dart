@@ -20,7 +20,7 @@ class PostRespViewProvider with ChangeNotifier {
       String data = result.toString();
 
       postsData = _parseData(data);
-      notifyListeners();
+     // notifyListeners();
 
       print(result.data.toString());
     } catch (e) {

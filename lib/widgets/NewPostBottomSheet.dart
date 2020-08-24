@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 
@@ -45,7 +46,11 @@ class NewPostBottomSheetState extends State<NewPostBottomSheet>
                 ),
               ),
               InkWell(
-                onTap: () => Navigator.pop(context),
+                onTap: () async {
+                  Navigator.pop(context);
+                  var file = await FilePicker.getFile(type: FileType.video,allowCompression: true);
+                  print(file.path);
+                  },
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

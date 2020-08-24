@@ -10,6 +10,7 @@ import 'package:meme/providers/PostRespViewProvider.dart';
 import 'package:meme/widgets/LoginOrSignup.dart';
 import 'package:meme/widgets/NewPostBottomSheet.dart';
 import 'package:meme/widgets/PostsList.dart';
+import 'package:meme/widgets/VideoCacheProvider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 
@@ -23,6 +24,7 @@ void main() {
             create: (_) => PostRespViewProvider()),
         ChangeNotifierProvider<AccountsProvider>(
             create: (_) => AccountsProvider()),
+        ChangeNotifierProvider<VideoCacheProvider>(create: (_)=>VideoCacheProvider())
       ],
     ),
   );
@@ -69,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.horizontal(left: Radius.circular(8),right: Radius.circular(8))),
             centerTitle: true,
-            backgroundColor: Colors.transparent,
+           
             elevation: 0,
             leading: Icon(LineAwesomeIcons.bars),
 
@@ -85,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           backgroundColor: Colors.white,
           body: Container(
-            child: FutureBuilder(
+            child: FutureBuilder(r
               future: Provider
                   .of<AccountsProvider>(context)
                   .isLoggedResponse,

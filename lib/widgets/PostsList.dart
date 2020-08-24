@@ -4,6 +4,7 @@ import 'package:meme/model/PostsCollectionResponse.dart';
 import 'package:meme/providers/PostRespViewProvider.dart';
 import 'package:meme/widgets/ImagePostWidget.dart';
 import 'package:meme/widgets/PostsCard.dart';
+import 'package:meme/widgets/VideoCacheProvider.dart';
 import 'package:meme/widgets/VideoPostWidget.dart';
 import 'package:meme/widgets/YtPostWidedget.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,9 @@ class PostsList extends StatelessWidget{
                   } else if (snapshot.data[index].type == "image") {
                     return PostsCard( snapshot.data[index],ImagePostWidget(snapshot.data[index]));
                   } else if (snapshot.data[index].type == "video") {
-                    return PostsCard( snapshot.data[index],VideoPostWidget(snapshot.data[index]));
+                    return PostsCard( snapshot.data[index],Consumer<VideoCacheProvider>(builder: (context,_,child){
+                      return  VideoPostWidget(snapshot.data[index]);
+                    },));
                   } else {
                     return Container();
                   }

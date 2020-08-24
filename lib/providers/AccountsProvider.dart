@@ -18,7 +18,6 @@ class AccountsProvider with ChangeNotifier {
   getCheckIfLoggedIn() {
     isLoggedIn = checkForLogin();
     isLoggedInChecked =true;
-    notifyListeners();
   }
 
   Future<bool> checkForLogin() async {
